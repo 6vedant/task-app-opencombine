@@ -1,0 +1,23 @@
+{
+  "pins" : [
+    {
+      "identity" : "swift-crypto",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-crypto.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "fade39776327ce99c2ffc980d345397f39b4f328"
+      }
+    },
+    {
+      "identity" : "swift-java",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/scade-platform/swift-java.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "6b2cf43f63cc5959978caee931c487d07f7d9c03"
+      }
+    }
+  ],
+  "version" : 2
+}
