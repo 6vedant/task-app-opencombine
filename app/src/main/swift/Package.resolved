@@ -1,12 +1,12 @@
 {
   "pins" : [
     {
-      "identity" : "swift-crypto",
+      "identity" : "opencombine",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-crypto.git",
+      "location" : "https://github.com/OpenCombine/OpenCombine.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "fade39776327ce99c2ffc980d345397f39b4f328"
+        "revision" : "8576f0d579b27020beccbccc3ea6844f3ddfc2c2",
+        "version" : "0.14.0"
       }
     },
     {

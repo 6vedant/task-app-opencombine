@@ -1,9 +1,11 @@
 package com.example.swiftandroidexample;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,6 +16,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 public class MainActivity extends AppCompatActivity {
 
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,20 +37,25 @@ public class MainActivity extends AppCompatActivity {
 
         initUIWidgets();
 
-
+        initTaskManager();
     }
 
     private void initUIWidgets() {
-
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
     }
 
     // method is called from swift code, and result is sent as input parameter
-    public void onPasswordValidated(String validationResult) {
-
+    public void printTasks(String taskResultString) {
+        Log.d("TAG", taskResultString);
     }
+
+    public native void addTask(String task, long taskCreationTime);
+
+    public native void removeTask(String task);
 
     // custom method to be called from java
     // implementation of method is in Swift file
-    private native void validatePassword(String passwordString,
-                                         String confirmPasswordString);
+    private native void initTaskManager();
+
+
 }

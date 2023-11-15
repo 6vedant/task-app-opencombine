@@ -14,7 +14,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/scade-platform/swift-java.git", branch: "main"),
-        .package(url: "https://github.com/apple/swift-crypto.git", .branch("main"))
+        .package(url: "https://github.com/OpenCombine/OpenCombine.git", from: "0.10.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -23,7 +23,7 @@ let package = Package(
             name: "SwiftAndroidExample",
             dependencies: [
                     .product(name: "Java", package: "swift-java"),
-                    .product(name: "Crypto", package: "swift-crypto")
+                    .product(name: "OpenCombine", package: "OpenCombine"),
             ]),
         .testTarget(
             name: "SwiftAndroidExampleTests",
