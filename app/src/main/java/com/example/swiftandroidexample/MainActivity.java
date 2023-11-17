@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(MainActivity.this, tasks, new RecyclerViewAdapter.OnTaskItemClickListner() {
             @Override
             public void onTaskItemClick(String taskModel) {
-                Toast.makeText(getApplicationContext(), "CLicked items"+taskModel, Toast.LENGTH_SHORT).show();
+                showDialogToRemoveTask(taskModel);
             }
 
             @Override
@@ -117,6 +117,28 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(recyclerViewAdapter);
     }
 
+    private void showDialogToRemoveTask(String taskModel) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Remove the task: "+taskModel);
+
+        // Set up the buttons
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                removeTask(taskModel);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+
+    }
+
     private List<String> getTasksFromString(String taskResultString) {
         ArrayList<String> taskList = new ArrayList<>();
         taskList.clear();
@@ -126,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
 
     public native void addTask(String taskName);
 
-    public native void removeTask(String task);
+    public native void removeTask(String taskName);
 
     // custom method to be called from java
     // implementation of method is in Swift file

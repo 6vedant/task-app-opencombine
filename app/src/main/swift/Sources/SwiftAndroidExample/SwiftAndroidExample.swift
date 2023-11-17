@@ -1,21 +1,17 @@
-
-import Foundation
 import Dispatch
+import Foundation
 import Java
 import OpenCombine
 
+public func updateTasksList(activity: JObject) {
 
-public func updateTasksList(activity: JObject)
-{
+  // Example usage
+  let viewModel = TaskListViewModel.viewModel
 
-      // Example usage
-       let viewModel = TaskListViewModel.viewModel
-
-        let val = viewModel.getTasksResultString()
-         activity.call(
-              // return the error result string
-              method: "printTasks", "\(val)")
-
+  let val = viewModel.getTasksResultString()
+  activity.call(
+    // return the error result string
+    method: "printTasks", "\(val)")
 
 }
 
@@ -26,10 +22,9 @@ public func MainActivity_initTaskManager(
 ) {
   // Create JObject wrapper for activity object
   let mainActivity = JObject(activity)
-   let viewModel = TaskListViewModel.viewModel
+  let viewModel = TaskListViewModel.viewModel
 
-
-updateTasksList(activity: mainActivity)
+  updateTasksList(activity: mainActivity)
 
 }
 
@@ -39,60 +34,79 @@ public func MainActivity_addTask(
   env: UnsafeMutablePointer<JNIEnv>, activity: JavaObject,
   taskName: JavaString
 ) {
-// Create JObject wrapper for activity object
+  // Create JObject wrapper for activity object
   let mainActivity = JObject(activity)
 
-   // Convert the Java string to a Swift string
-    let taskTitle = String.fromJavaObject(taskName)
+  // Convert the Java string to a Swift string
+  let taskTitle = String.fromJavaObject(taskName)
 
-   let viewModel = TaskListViewModel.viewModel
+  let viewModel = TaskListViewModel.viewModel
 
+  let task1 = Task(id: viewModel.tasks.count, title: taskTitle)
 
-      let task1 = Task(id: 1, title: taskTitle)
-
-      viewModel.addTask(task1)
-    updateTasksList(activity: mainActivity)
+  viewModel.addTask(task1)
+  updateTasksList(activity: mainActivity)
 }
 
+// NOTE: Use @_silgen_name attribute to set native name for a function called from Java
+@_silgen_name("Java_com_example_swiftandroidexample_MainActivity_removeTask")
+public func MainActivity_removeTask(
+  env: UnsafeMutablePointer<JNIEnv>, activity: JavaObject,
+  taskName: JavaString
+) {
+  // Create JObject wrapper for activity object
+  let mainActivity = JObject(activity)
 
-  // Model for a task
-  struct Task: Identifiable {
-    let id: Int
-    let title: String
+  // Convert the Java string to a Swift string
+  let taskTitle = String.fromJavaObject(taskName)
+
+  let viewModel = TaskListViewModel.viewModel
+
+  for task in viewModel.tasks {
+    if task.title == taskTitle {
+      viewModel.removeTask(task)
+    }
   }
 
-  // ViewModel to manage tasks
-  class TaskListViewModel {
-    static let viewModel = TaskListViewModel()
-    private init() {
-    }
-    var tasks: [Task] = []
-    let tasksPublisher = PassthroughSubject<[Task], Never>()
+  updateTasksList(activity: mainActivity)
+}
 
-    func addTask(_ task: Task) {
-      tasks.append(task)
-      print("Task added: \(task.title)")
-      tasksPublisher.send(tasks)
-    }
+// Model for a task
+struct Task: Identifiable {
+  let id: Int
+  let title: String
+}
 
-    func removeTask(_ task: Task) {
-      tasks.remove(at: task.id - 1)
-      print("Task removed: \(task.title)")
-      tasksPublisher.send(tasks)
-    }
+// ViewModel to manage tasks
+class TaskListViewModel {
+  static let viewModel = TaskListViewModel()
+  private init() {
+  }
+  var tasks: [Task] = []
+  let tasksPublisher = PassthroughSubject<[Task], Never>()
 
-    func getTasksResultString() -> String {
+  func addTask(_ task: Task) {
+    tasks.append(task)
+    print("Task added: \(task.title)")
+    tasksPublisher.send(tasks)
+  }
+
+  func removeTask(_ task: Task) {
+    tasks.remove(at: task.id)
+    print("Task removed: \(task.title)")
+    tasksPublisher.send(tasks)
+  }
+
+  func getTasksResultString() -> String {
     var resultString = ""
-      if tasks.isEmpty {
+    if tasks.isEmpty {
 
-      } else {
-        print("Current tasks:")
-        for task in tasks {
-          resultString += "\(task.title)#@"
-        }
+    } else {
+      print("Current tasks:")
+      for task in tasks {
+        resultString += "\(task.title)#@"
       }
-      return resultString
     }
+    return resultString
   }
-
-
+}
