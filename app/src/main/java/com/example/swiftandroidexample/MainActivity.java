@@ -1,22 +1,34 @@
 package com.example.swiftandroidexample;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.swiftandroidexample.adapter.RecyclerViewAdapter;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,18 +50,81 @@ public class MainActivity extends AppCompatActivity {
         initUIWidgets();
 
         initTaskManager();
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // create a task
+                takeTaskInput();
+            }
+        });
+    }
+
+    private void takeTaskInput() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter a Task");
+
+        // Set up the input
+        final EditText input = new EditText(this);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String taskText = input.getText().toString();
+                addTask(taskText);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
     }
 
     private void initUIWidgets() {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
     }
 
     // method is called from swift code, and result is sent as input parameter
     public void printTasks(String taskResultString) {
-        Log.d("TAG", taskResultString);
+        if(taskResultString.isEmpty()) {
+            // show add tasks
+
+            return;
+        }
+        List<String> tasks = getTasksFromString(taskResultString);
+        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(MainActivity.this, tasks, new RecyclerViewAdapter.OnTaskItemClickListner() {
+            @Override
+            public void onTaskItemClick(String taskModel) {
+                Toast.makeText(getApplicationContext(), "CLicked items"+taskModel, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public boolean onTaskItemLongClick(String taskModel) {
+                return false;
+            }
+        });
+        LinearLayoutManager linearLayoutManager  = new LinearLayoutManager(MainActivity.this);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(recyclerViewAdapter);
     }
 
-    public native void addTask(String task, long taskCreationTime);
+    private List<String> getTasksFromString(String taskResultString) {
+        ArrayList<String> taskList = new ArrayList<>();
+        taskList.clear();
+        String[] strArr = taskResultString.split("#@");
+        return Arrays.asList(strArr);
+    }
+
+    public native void addTask(String taskName);
 
     public native void removeTask(String task);
 

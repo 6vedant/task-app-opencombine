@@ -13,22 +13,23 @@ import com.example.swiftandroidexample.R;
 import com.example.swiftandroidexample.model.TaskModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> {
     private Context context;
-    private ArrayList<TaskModel> taskModels;
+    private List<String> taskModels;
     private final OnTaskItemClickListner taskItemClickListner;
 
-    public RecyclerViewAdapter(Context context, ArrayList<TaskModel> taskModels, OnTaskItemClickListner taskItemClickListner) {
+    public RecyclerViewAdapter(Context context, List<String> taskModels, OnTaskItemClickListner taskItemClickListner) {
         this.context = context;
         this.taskModels = taskModels;
         this.taskItemClickListner = taskItemClickListner;
     }
 
     public interface OnTaskItemClickListner {
-        void onTaskItemClick(TaskModel taskModel);
+        void onTaskItemClick(String taskModel);
 
-        boolean onTaskItemLongClick(TaskModel taskModel);
+        boolean onTaskItemLongClick(String taskModel);
     }
 
     @NonNull
@@ -56,8 +57,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             titleTV = (TextView) itemView.findViewById(R.id.titleTV);
         }
 
-        public void bind(final TaskModel taskModel, final OnTaskItemClickListner taskItemClickListner) {
-            titleTV.setText(taskModel.getTitle());
+        public void bind(final String taskModel, final OnTaskItemClickListner taskItemClickListner) {
+            titleTV.setText(taskModel);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

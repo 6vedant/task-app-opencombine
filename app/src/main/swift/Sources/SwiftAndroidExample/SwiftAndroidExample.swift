@@ -4,14 +4,18 @@ import Dispatch
 import Java
 import OpenCombine
 
-// Hashing(encryption) the password and validating against the confirm password by decryption.
-// Executes callback in main activity and sends the validation result
+
 public func updateTasksList(activity: JObject)
 {
 
-    activity.call(
-      // return the error result string
-      method: "printTasks", "tasksstringhere")
+      // Example usage
+       let viewModel = TaskListViewModel.viewModel
+
+        let val = viewModel.getTasksResultString()
+         activity.call(
+              // return the error result string
+              method: "printTasks", "\(val)")
+
 
 }
 
@@ -22,28 +26,34 @@ public func MainActivity_initTaskManager(
 ) {
   // Create JObject wrapper for activity object
   let mainActivity = JObject(activity)
-      let viewModel = TaskListViewModel()
+   let viewModel = TaskListViewModel.viewModel
 
-      // Example usage
-      let taskCancellable = viewModel.tasksPublisher
-        .sink { tasks in
-          if tasks.isEmpty {
-            print("No tasks available.")
-          } else {
-            print("Current tasks:\(tasks.count)")
-          }
-        }
-      // put while
-      let task1 = Task(id: 1, title: "Task-one")
-      let task2 = Task(id: 2, title: "Task-two")
-
-      viewModel.addTask(task1)
-      viewModel.addTask(task2)
-      viewModel.removeTask(task1)
 
 updateTasksList(activity: mainActivity)
 
 }
+
+// NOTE: Use @_silgen_name attribute to set native name for a function called from Java
+@_silgen_name("Java_com_example_swiftandroidexample_MainActivity_addTask")
+public func MainActivity_addTask(
+  env: UnsafeMutablePointer<JNIEnv>, activity: JavaObject,
+  taskName: JavaString
+) {
+// Create JObject wrapper for activity object
+  let mainActivity = JObject(activity)
+
+   // Convert the Java string to a Swift string
+    let taskTitle = String.fromJavaObject(taskName)
+
+   let viewModel = TaskListViewModel.viewModel
+
+
+      let task1 = Task(id: 1, title: taskTitle)
+
+      viewModel.addTask(task1)
+    updateTasksList(activity: mainActivity)
+}
+
 
   // Model for a task
   struct Task: Identifiable {
@@ -53,6 +63,9 @@ updateTasksList(activity: mainActivity)
 
   // ViewModel to manage tasks
   class TaskListViewModel {
+    static let viewModel = TaskListViewModel()
+    private init() {
+    }
     var tasks: [Task] = []
     let tasksPublisher = PassthroughSubject<[Task], Never>()
 
@@ -68,15 +81,17 @@ updateTasksList(activity: mainActivity)
       tasksPublisher.send(tasks)
     }
 
-    func printTasks() {
+    func getTasksResultString() -> String {
+    var resultString = ""
       if tasks.isEmpty {
-        print("No tasks available.")
+
       } else {
         print("Current tasks:")
         for task in tasks {
-          print("\(task.id). \(task.title)")
+          resultString += "\(task.title)#@"
         }
       }
+      return resultString
     }
   }
 
