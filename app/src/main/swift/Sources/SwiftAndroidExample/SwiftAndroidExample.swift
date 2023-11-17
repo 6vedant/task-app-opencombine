@@ -12,7 +12,6 @@ public func updateTasksList(activity: JObject) {
   activity.call(
     // return the error result string
     method: "printTasks", "\(val)")
-
 }
 
 // NOTE: Use @_silgen_name attribute to set native name for a function called from Java
@@ -25,7 +24,6 @@ public func MainActivity_initTaskManager(
   let viewModel = TaskListViewModel.viewModel
 
   updateTasksList(activity: mainActivity)
-
 }
 
 // NOTE: Use @_silgen_name attribute to set native name for a function called from Java
