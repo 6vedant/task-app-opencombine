@@ -95,11 +95,14 @@ public class MainActivity extends AppCompatActivity {
 
     // method is called from swift code, and result is sent as input parameter
     public void printTasks(String taskResultString) {
-        if(taskResultString.isEmpty()) {
+        if (taskResultString.isEmpty()) {
             // show add tasks
-
+            findViewById(R.id.noTasksPresentLayout).setVisibility(View.VISIBLE);
+            findViewById(R.id.layoutTasks).setVisibility(View.GONE);
             return;
         }
+        findViewById(R.id.noTasksPresentLayout).setVisibility(View.GONE);
+        findViewById(R.id.layoutTasks).setVisibility(View.VISIBLE);
         List<String> tasks = getTasksFromString(taskResultString);
         RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(MainActivity.this, tasks, new RecyclerViewAdapter.OnTaskItemClickListner() {
             @Override
@@ -112,14 +115,14 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-        LinearLayoutManager linearLayoutManager  = new LinearLayoutManager(MainActivity.this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MainActivity.this);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(recyclerViewAdapter);
     }
 
     private void showDialogToRemoveTask(String taskModel) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Remove the task: "+taskModel);
+        builder.setTitle("Remove the task: " + taskModel);
 
         // Set up the buttons
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
